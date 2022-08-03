@@ -28,17 +28,56 @@ public:
 
     void OnLootMoney(Player* player, uint32 gold) override
     {
-        if (Guild* guild = player->GetGuild())
+        if (Group* group = player->GetGroup())
         {
-            uint32 money = ((gold / 100) * gfLootMultiplier);
+            uint32 membersInRange = 0;
+            for (GroupReference* groupRef = group->GetFirstMember(); groupRef != nullptr; groupRef = groupRef->next())
+            {
+                if (Player* member = groupRef->GetSource())
+                {
+                    if (member->IsAtLootRewardDistance(player))
+                        membersInRange++;
+                }
+            }
+
+            uint32 money = (((gold / membersInRange) / 100) * gfLootMultiplier);
 
             if (money < 1 || gfLootMultiplier < 1)
                 return;
 
-            guild->HandleMemberDepositMoney(player->GetSession(), money);
+            for (GroupReference* groupRef = group->GetFirstMember(); groupRef != nullptr; groupRef = groupRef->next())
+            {
+                if (Player* member = groupRef->GetSource())
+                {
+                    if (member->IsAtLootRewardDistance(player))
+                    {
+                        if (Guild* guild = member->GetGuild())
+                        {
+                            guild->HandleMemberDepositMoney(member->GetSession(), money);
+                            member->ModifyMoney(money);
 
-            if (gfShowInfo)
-                PrintGuildFundsInformation(player, money);
+                            if (gfShowInfo)
+                                PrintGuildFundsInformation(member, money);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (Guild* guild = player->GetGuild())
+            {
+                uint32 money = ((gold / 100) * gfLootMultiplier);
+
+                if (money < 1 || gfLootMultiplier < 1)
+                    return;
+
+                guild->HandleMemberDepositMoney(player->GetSession(), money);
+                player->ModifyMoney(money);
+
+                if (gfShowInfo)
+                    PrintGuildFundsInformation(player, money);
+            }
         }
     }
 
@@ -77,6 +116,7 @@ public:
                 return;
 
             guild->HandleMemberDepositMoney(player->GetSession(), money);
+            player->ModifyMoney(money);
 
             if (gfShowInfo)
                 PrintGuildFundsInformation(player, money);
