@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "ScriptMgr.h"
 
+bool showInfo;
 uint32 lootFunds;
 uint32 questFunds;
 
@@ -14,6 +15,7 @@ public:
 
     void OnAfterConfigLoad(bool /*reload*/) override
     {
+        showInfo = sConfigMgr->GetOption<bool>("GuildFunds.ShowInfo", 1);
         lootFunds = sConfigMgr->GetOption<uint32>("GuildFunds.Looted", 10);
         questFunds = sConfigMgr->GetOption<uint32>("GuildFunds.Quests", 3);
     }
@@ -34,7 +36,9 @@ public:
                 return;
 
             guild->HandleMemberDepositMoney(player->GetSession(), money);
-            PrintGuildFundsInformation(player, money);
+
+            if (showInfo)
+                PrintGuildFundsInformation(player, money);
         }
     }
 
@@ -73,7 +77,9 @@ public:
                 return;
 
             guild->HandleMemberDepositMoney(player->GetSession(), money);
-            PrintGuildFundsInformation(player, money);
+
+            if (showInfo)
+                PrintGuildFundsInformation(player, money);
         }
     }
 
