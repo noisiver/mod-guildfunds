@@ -4,9 +4,9 @@
 #include "Player.h"
 #include "ScriptMgr.h"
 
-bool showInfo;
-uint32 lootFunds;
-uint32 questFunds;
+bool gfShowInfo;
+uint32 gfLootMultiplier;
+uint32 gfQuestMultiplier;
 
 class GuildFundsConfig : WorldScript
 {
@@ -15,9 +15,9 @@ public:
 
     void OnAfterConfigLoad(bool /*reload*/) override
     {
-        showInfo = sConfigMgr->GetOption<bool>("GuildFunds.ShowInfo", 1);
-        lootFunds = sConfigMgr->GetOption<uint32>("GuildFunds.Looted", 10);
-        questFunds = sConfigMgr->GetOption<uint32>("GuildFunds.Quests", 3);
+        gfShowInfo = sConfigMgr->GetOption<bool>("GuildFunds.ShowInfo", 1);
+        gfLootMultiplier = sConfigMgr->GetOption<uint32>("GuildFunds.Looted", 10);
+        gfQuestMultiplier = sConfigMgr->GetOption<uint32>("GuildFunds.Quests", 3);
     }
 };
 
@@ -30,14 +30,14 @@ public:
     {
         if (Guild* guild = player->GetGuild())
         {
-            uint32 money = ((gold / 100) * questFunds);
+            uint32 money = ((gold / 100) * gfLootMultiplier);
 
-            if (money < 0 || lootFunds < 1)
+            if (money < 1 || gfLootMultiplier < 1)
                 return;
 
             guild->HandleMemberDepositMoney(player->GetSession(), money);
 
-            if (showInfo)
+            if (gfShowInfo)
                 PrintGuildFundsInformation(player, money);
         }
     }
@@ -71,14 +71,14 @@ public:
         if (Guild* guild = player->GetGuild())
         {
             uint32 playerLevel = player->getLevel();
-            uint32 money = ((quest->GetRewOrReqMoney(playerLevel) / 100) * questFunds);
+            uint32 money = ((quest->GetRewOrReqMoney(playerLevel) / 100) * gfQuestMultiplier);
 
-            if (money < 0 || questFunds < 1)
+            if (money < 1 || gfQuestMultiplier < 1)
                 return;
 
             guild->HandleMemberDepositMoney(player->GetSession(), money);
 
-            if (showInfo)
+            if (gfShowInfo)
                 PrintGuildFundsInformation(player, money);
         }
     }
