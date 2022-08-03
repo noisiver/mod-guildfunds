@@ -1,0 +1,13 @@
+[worldserver]
+
+##
+# The amount, in percentage, of money looted to add to the guild bank
+# Set to 0 to disable
+GuildFunds.Looted = 10
+##
+
+##
+# The amount, in percentage, of money gained from quests to add to the guild bank
+# Set to 0 to disable
+GuildFunds.Quests = 3
+##
