@@ -40,9 +40,12 @@ public:
                 }
             }
 
-            uint32 money = (((gold / membersInRange) / 100) * gfLootMultiplier);
+            if (gfLootMultiplier < 1)
+                return;
 
-            if (money < 1 || gfLootMultiplier < 1)
+            uint32 money = (gold / membersInRange) * gfLootMultiplier / 100;
+
+            if (money < 1)
                 return;
 
             for (GroupReference* groupRef = group->GetFirstMember(); groupRef != nullptr; groupRef = groupRef->next())
@@ -67,7 +70,7 @@ public:
         {
             if (Guild* guild = player->GetGuild())
             {
-                uint32 money = ((gold / 100) * gfLootMultiplier);
+                uint32 money = gold * gfLootMultiplier / 100;
 
                 if (money < 1 || gfLootMultiplier < 1)
                     return;
@@ -109,10 +112,13 @@ public:
     {
         if (Guild* guild = player->GetGuild())
         {
-            uint32 playerLevel = player->getLevel();
-            uint32 money = ((quest->GetRewOrReqMoney(playerLevel) / 100) * gfQuestMultiplier);
+            if (gfQuestMultiplier < 1)
+                return;
 
-            if (money < 1 || gfQuestMultiplier < 1)
+            uint32 playerLevel = player->getLevel();
+            uint32 money = quest->GetRewOrReqMoney(playerLevel) * gfQuestMultiplier / 100;
+
+            if (money < 1)
                 return;
 
             guild->HandleMemberDepositMoney(player->GetSession(), money);
