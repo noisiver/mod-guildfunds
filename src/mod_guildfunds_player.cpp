@@ -37,11 +37,11 @@ void GuildFunds::SendFundsInformation(Player* player, uint32 money)
     std::string info;
 
     if (money < SILVER)
-        info = Acore::StringFormat("%i copper was deposited to the guild bank.", copper);
+        info = Acore::StringFormat("{} copper was deposited to the guild bank.", copper);
     else if (money < GOLD)
-        info = Acore::StringFormat("%i silver, %i copper was deposited to the guild bank.", silver, copper);
+        info = Acore::StringFormat("{} silver, {} copper was deposited to the guild bank.", silver, copper);
     else
-        info = Acore::StringFormat("%i gold, %i silver, %i copper was deposited to the guild bank.", gold, silver, copper);
+        info = Acore::StringFormat("{} gold, {} silver, {} copper was deposited to the guild bank.", gold, silver, copper);
 
     ChatHandler(player->GetSession()).SendSysMessage(info);
 }
